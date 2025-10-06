@@ -1,10 +1,31 @@
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { MapPin, Users, BookOpen, User, Menu } from "lucide-react";
-import { Link, useLocation } from "react-router-dom";
+import { MapPin, Users, BookOpen, User, Menu, LogOut } from "lucide-react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+import type { User as SupabaseUser } from "@supabase/supabase-js";
 
 const Navigation = () => {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const [user, setUser] = useState<SupabaseUser | null>(null);
+
+  useEffect(() => {
+    // Get initial session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+    });
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
   
   const navItems = [
     { path: "/planner", label: "Planner", icon: MapPin },
@@ -14,6 +35,15 @@ const Navigation = () => {
   ];
 
   const isActive = (path: string) => location.pathname === path;
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    toast({
+      title: "Signed out",
+      description: "You've been successfully signed out.",
+    });
+    navigate("/");
+  };
 
   const NavLinks = ({ mobile = false }: { mobile?: boolean }) => (
     <>
@@ -52,8 +82,26 @@ const Navigation = () => {
         </div>
 
         <div className="hidden md:flex items-center gap-2">
-          <Button variant="outline">Sign In</Button>
-          <Button>Get Started</Button>
+          {user ? (
+            <>
+              <span className="text-sm text-muted-foreground">
+                {user.email}
+              </span>
+              <Button variant="outline" onClick={handleSignOut}>
+                <LogOut className="h-4 w-4 mr-2" />
+                Sign Out
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button variant="outline" asChild>
+                <Link to="/auth">Sign In</Link>
+              </Button>
+              <Button asChild>
+                <Link to="/auth">Get Started</Link>
+              </Button>
+            </>
+          )}
         </div>
 
         {/* Mobile Navigation */}
@@ -67,8 +115,26 @@ const Navigation = () => {
             <div className="flex flex-col gap-4 mt-8">
               <NavLinks mobile />
               <div className="flex flex-col gap-2 pt-4 border-t">
-                <Button variant="outline" className="w-full">Sign In</Button>
-                <Button className="w-full">Get Started</Button>
+                {user ? (
+                  <>
+                    <span className="text-sm text-muted-foreground px-4">
+                      {user.email}
+                    </span>
+                    <Button variant="outline" className="w-full" onClick={handleSignOut}>
+                      <LogOut className="h-4 w-4 mr-2" />
+                      Sign Out
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Button variant="outline" className="w-full" asChild>
+                      <Link to="/auth">Sign In</Link>
+                    </Button>
+                    <Button className="w-full" asChild>
+                      <Link to="/auth">Get Started</Link>
+                    </Button>
+                  </>
+                )}
               </div>
             </div>
           </SheetContent>
