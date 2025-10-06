@@ -1,31 +1,16 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { MapPin, Users, BookOpen, User, Menu, LogOut } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
 
 const Navigation = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { toast } = useToast();
   const [user, setUser] = useState<SupabaseUser | null>(null);
-
-  useEffect(() => {
-    // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
-    });
-
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      setUser(session?.user ?? null);
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
   
   const navItems = [
     { path: "/planner", label: "Planner", icon: MapPin },
@@ -34,16 +19,31 @@ const Navigation = () => {
     { path: "/mentors", label: "Mentors", icon: User },
   ];
 
-  const isActive = (path: string) => location.pathname === path;
+  useEffect(() => {
+    // Get initial session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+    });
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   const handleSignOut = async () => {
-    await supabase.auth.signOut();
-    toast({
-      title: "Signed out",
-      description: "You've been successfully signed out.",
-    });
-    navigate("/");
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      toast.error("Error signing out");
+    } else {
+      toast.success("Signed out successfully");
+      navigate("/");
+    }
   };
+
+  const isActive = (path: string) => location.pathname === path;
 
   const NavLinks = ({ mobile = false }: { mobile?: boolean }) => (
     <>
@@ -87,7 +87,7 @@ const Navigation = () => {
               <span className="text-sm text-muted-foreground">
                 {user.email}
               </span>
-              <Button variant="outline" onClick={handleSignOut}>
+              <Button variant="outline" size="sm" onClick={handleSignOut}>
                 <LogOut className="h-4 w-4 mr-2" />
                 Sign Out
               </Button>
@@ -117,9 +117,9 @@ const Navigation = () => {
               <div className="flex flex-col gap-2 pt-4 border-t">
                 {user ? (
                   <>
-                    <span className="text-sm text-muted-foreground px-4">
+                    <div className="text-sm text-muted-foreground px-2 py-1">
                       {user.email}
-                    </span>
+                    </div>
                     <Button variant="outline" className="w-full" onClick={handleSignOut}>
                       <LogOut className="h-4 w-4 mr-2" />
                       Sign Out

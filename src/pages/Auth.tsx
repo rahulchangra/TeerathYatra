@@ -1,20 +1,16 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 
 const Auth = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [fullName, setFullName] = useState("");
-  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const { toast } = useToast();
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     // Check if user is already logged in
@@ -23,108 +19,86 @@ const Auth = () => {
         navigate("/");
       }
     });
-
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (session) {
-        navigate("/");
-      }
-    });
-
-    return () => subscription.unsubscribe();
   }, [navigate]);
 
-  const handleSignUp = async (e: React.FormEvent) => {
+  const handleSignUp = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
 
-    try {
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: {
-            full_name: fullName,
-          },
-          emailRedirectTo: `${window.location.origin}/`,
+    const formData = new FormData(e.currentTarget);
+    const email = formData.get("signup-email") as string;
+    const password = formData.get("signup-password") as string;
+    const fullName = formData.get("full-name") as string;
+
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        emailRedirectTo: `${window.location.origin}/`,
+        data: {
+          full_name: fullName,
         },
-      });
+      },
+    });
 
-      if (error) throw error;
+    setLoading(false);
 
-      toast({
-        title: "Success!",
-        description: "Account created successfully. You can now sign in.",
-      });
-    } catch (error: any) {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
+    if (error) {
+      toast.error(error.message);
+    } else {
+      toast.success("Account created successfully! You can now sign in.");
     }
   };
 
-  const handleSignIn = async (e: React.FormEvent) => {
+  const handleSignIn = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
 
-    try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
+    const formData = new FormData(e.currentTarget);
+    const email = formData.get("signin-email") as string;
+    const password = formData.get("signin-password") as string;
 
-      if (error) throw error;
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
 
-      toast({
-        title: "Welcome back!",
-        description: "You've successfully signed in.",
-      });
-    } catch (error: any) {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
+    setLoading(false);
+
+    if (error) {
+      toast.error(error.message);
+    } else {
+      toast.success("Signed in successfully!");
+      navigate("/");
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-secondary/20 to-background p-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-primary/5 p-4">
       <Card className="w-full max-w-md">
-        <CardHeader className="space-y-1 text-center">
-          <div className="flex justify-center mb-4">
-            <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center">
-              <span className="text-white font-bold text-2xl">त</span>
-            </div>
+        <CardHeader className="text-center">
+          <div className="w-12 h-12 mx-auto mb-4 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center">
+            <span className="text-white font-bold text-2xl">त</span>
           </div>
-          <CardTitle className="text-2xl font-bold">TeerathYatra</CardTitle>
-          <CardDescription>
-            Begin your spiritual journey with us
-          </CardDescription>
+          <CardTitle className="text-2xl">Welcome to TeerathYatra</CardTitle>
+          <CardDescription>Plan your spiritual journey with us</CardDescription>
         </CardHeader>
         <CardContent>
-          <Tabs defaultValue="signin" className="w-full">
+          <Tabs defaultValue="signin">
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="signin">Sign In</TabsTrigger>
               <TabsTrigger value="signup">Sign Up</TabsTrigger>
             </TabsList>
-            
+
             <TabsContent value="signin">
               <form onSubmit={handleSignIn} className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="signin-email">Email</Label>
                   <Input
                     id="signin-email"
+                    name="signin-email"
                     type="email"
                     placeholder="you@example.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
                     required
                   />
                 </div>
@@ -132,10 +106,9 @@ const Auth = () => {
                   <Label htmlFor="signin-password">Password</Label>
                   <Input
                     id="signin-password"
+                    name="signin-password"
                     type="password"
                     placeholder="••••••••"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
                     required
                   />
                 </div>
@@ -144,17 +117,16 @@ const Auth = () => {
                 </Button>
               </form>
             </TabsContent>
-            
+
             <TabsContent value="signup">
               <form onSubmit={handleSignUp} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="signup-name">Full Name</Label>
+                  <Label htmlFor="full-name">Full Name</Label>
                   <Input
-                    id="signup-name"
+                    id="full-name"
+                    name="full-name"
                     type="text"
                     placeholder="Your name"
-                    value={fullName}
-                    onChange={(e) => setFullName(e.target.value)}
                     required
                   />
                 </div>
@@ -162,10 +134,9 @@ const Auth = () => {
                   <Label htmlFor="signup-email">Email</Label>
                   <Input
                     id="signup-email"
+                    name="signup-email"
                     type="email"
                     placeholder="you@example.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
                     required
                   />
                 </div>
@@ -173,16 +144,15 @@ const Auth = () => {
                   <Label htmlFor="signup-password">Password</Label>
                   <Input
                     id="signup-password"
+                    name="signup-password"
                     type="password"
                     placeholder="••••••••"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
                     minLength={6}
+                    required
                   />
                 </div>
                 <Button type="submit" className="w-full" disabled={loading}>
-                  {loading ? "Creating account..." : "Sign Up"}
+                  {loading ? "Creating account..." : "Create Account"}
                 </Button>
               </form>
             </TabsContent>
