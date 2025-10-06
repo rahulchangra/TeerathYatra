@@ -8,83 +8,84 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    --background: 35 25% 98%;
-    --foreground: 25 30% 15%;
+    --background: 25 25% 14%; /* Dark brown */
+    --foreground: 35 20% 92%; /* Light beige */
 
-    --card: 0 0% 100%;
-    --card-foreground: 25 30% 15%;
+    --card: 25 15% 14%;
+    --card-foreground: 35 20% 92%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 25 30% 15%;
+    --popover: 25 15% 14%;
+    --popover-foreground: 35 20% 92%;
 
-    --primary: 24 100% 50%;
+    --primary: 24 90% 55%; /* Brighter burnt orange */
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 35 85% 95%;
-    --secondary-foreground: 25 30% 15%;
+    --secondary: 25 10% 20%;
+    --secondary-foreground: 35 20% 92%;
 
-    --muted: 35 40% 96%;
-    --muted-foreground: 25 15% 45%;
+    --muted: 25 10% 20%;
+    --muted-foreground: 35 15% 60%;
 
-    --accent: 330 85% 45%;
-    --accent-foreground: 0 0% 100%;
+    --accent: 45 80% 60%; /* Brighter warm gold */
+    --accent-foreground: 25 15% 10%;
 
-    --destructive: 0 84.2% 60.2%;
+    --destructive: 0 60% 45%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 35 30% 88%;
-    --input: 35 30% 88%;
-    --ring: 24 100% 50%;
+    --border: 25 10% 25%;
+    --input: 25 10% 25%;
+    --ring: 24 95% 45%;
+    --custom-brown: 25 25% 14%;
 
     --radius: 0.75rem;
 
     /* Custom brand colors */
-    --sacred-orange: 24 100% 50%;
-    --warm-gold: 45 95% 55%;
-    --deep-magenta: 330 85% 45%;
-    --terracotta: 15 75% 55%;
-    --calm-sage: 140 25% 85%;
+    --sacred-orange: 24 95% 45%;
+    --warm-gold: 45 85% 50%;
+    --deep-magenta: 330 75% 40%;
+    --terracotta: 15 65% 50%;
+    --calm-sage: 140 20% 80%;
     
     /* Gradients */
-    --gradient-hero: linear-gradient(135deg, hsl(24 100% 50%) 0%, hsl(330 85% 45%) 100%);
-    --gradient-card: linear-gradient(180deg, hsl(0 0% 100%) 0%, hsl(35 45% 98%) 100%);
+    --gradient-hero: linear-gradient(135deg, hsl(24 95% 45%) 0%, hsl(45 85% 50%) 100%);
+    --gradient-card: linear-gradient(180deg, hsl(35 20% 99%) 0%, hsl(35 40% 96%) 100%);
     
     /* Shadows */
-    --shadow-elegant: 0 10px 40px -10px hsl(24 100% 50% / 0.15);
-    --shadow-card: 0 4px 20px -4px hsl(25 30% 15% / 0.08);
+    --shadow-elegant: 0 10px 40px -10px hsl(24 95% 45% / 0.2);
+    --shadow-card: 0 4px 20px -4px hsl(25 30% 10% / 0.1);
     
     /* Transitions */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .dark {
-    --background: 25 30% 8%;
-    --foreground: 35 25% 95%;
+    --background: 25 15% 10%; /* Dark brown */
+    --foreground: 35 20% 92%; /* Light beige */
 
-    --card: 25 25% 12%;
-    --card-foreground: 35 25% 95%;
+    --card: 25 15% 14%;
+    --card-foreground: 35 20% 92%;
 
-    --popover: 25 25% 12%;
-    --popover-foreground: 35 25% 95%;
+    --popover: 25 15% 14%;
+    --popover-foreground: 35 20% 92%;
 
-    --primary: 24 100% 55%;
+    --primary: 24 90% 55%; /* Brighter burnt orange */
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 25 20% 18%;
-    --secondary-foreground: 35 25% 95%;
+    --secondary: 25 10% 20%;
+    --secondary-foreground: 35 20% 92%;
 
-    --muted: 25 20% 18%;
+    --muted: 25 10% 20%;
     --muted-foreground: 35 15% 60%;
 
-    --accent: 330 85% 50%;
-    --accent-foreground: 0 0% 100%;
+    --accent: 45 80% 60%; /* Brighter warm gold */
+    --accent-foreground: 25 15% 10%;
 
-    --destructive: 0 62.8% 40%;
+    --destructive: 0 60% 45%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 25 20% 20%;
-    --input: 25 20% 20%;
-    --ring: 24 100% 55%;
+    --border: 25 10% 25%;
+    --input: 25 10% 25%;
+    --ring: 24 90% 55%;
   }
 }
 

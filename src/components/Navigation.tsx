@@ -51,10 +51,10 @@ const Navigation = () => {
         <Link
           key={item.path}
           to={item.path}
-          className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all text-white ${
             isActive(item.path)
               ? "bg-primary text-primary-foreground"
-              : "hover:bg-secondary"
+              : "hover:bg-primary"
           } ${mobile ? "w-full" : ""}`}
         >
           <item.icon className="h-4 w-4" />
@@ -65,13 +65,13 @@ const Navigation = () => {
   );
 
   return (
-    <nav className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <nav className="sticky top-0 z-50 w-full border-b bg-stone-800 backdrop-blur">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center">
             <span className="text-white font-bold text-lg">त</span>
           </div>
-          <span className="text-xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+          <span className="text-xl font-bold text-white">
             TeerathYatra
           </span>
         </Link>
@@ -84,7 +84,7 @@ const Navigation = () => {
         <div className="hidden md:flex items-center gap-2">
           {user ? (
             <>
-              <span className="text-sm text-muted-foreground">
+              <span className="text-sm text-white">
                 {user.email}
               </span>
               <Button variant="outline" size="sm" onClick={handleSignOut}>
@@ -108,7 +108,7 @@ const Navigation = () => {
         <Sheet>
           <SheetTrigger asChild className="md:hidden">
             <Button variant="ghost" size="icon">
-              <Menu className="h-5 w-5" />
+              <Menu className="h-5 w-5 text-white" />
             </Button>
           </SheetTrigger>
           <SheetContent>
